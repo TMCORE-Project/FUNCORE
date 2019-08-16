@@ -30,17 +30,19 @@ else % Create matrix with polynomial terms and matching constraints
     Y = yd(:,ones(1,d+1)); Y(:,1) = 1; Y = cumprod( Y,2);
     Z = zd(:,ones(1,d+1)); Z(:,1) = 1; Z = cumprod( Z,2);
     
-    np       = (d+1)*(d+2)*(d+3)/6; % Number of polynomial terms
-    XYZ      = zeros(n,np);
-    XYZ(:,1) = 1;
-    for k = 1:d
-        ids  =  k   *(k+1)*(k+2)/6+1;
-        ide  = (k+1)*(k+2)*(k+3)/6;
-        XYZ(:,ids:ids+k) = X(:,k+1:-1:1) .* Y(:,1:k+1);
+    np  = (d+1)*(d+2)*(d+3)/6; % Number of polynomial terms
+    XYZ = zeros(n,np);
+    col = 1; % Assemble polynomial matrix block
+    for k = 0:d
+        idx1 =  k   *(k+1)*(k+2)/6+1;
+        idx2 = (k+1)*(k+2)*(k+3)/6;
+        XYZ(:,col:col+k) = X(:,k+1:-1:1) .* Y(:,1:k+1);
         
-        idz1 = (k-1)*(k  )*(k+1)/6+1;
-        idz2 = (k  )*(k+1)*(k+2)/6;
-        XYZ(:,ids+k+1:ide) = XYZ(:,idz1:idz2) .* Z(:,2);
+        idx1 =  k   *(k+1)*(k+2)/6+1;
+        idx2 = (k+1)*(k+2)*(k+3)/6;
+        XYZ(:,col+k) = 
+%         col = col+k+1;
+        col = col + (k + 1) * (k + 2) / 2;
     end
     L1 = zeros(np,2); % Create matching RHSs
     if d >= 1
@@ -57,7 +59,7 @@ else % Create matrix with polynomial terms and matching constraints
         L1(4,1) = dzdlon;
         L1(4,2) = dzdlat;
     end
-    A = [A0,XYZ;XYZ',zeros(np)]; % Assemble linear system to be solved
+    A = [A0,XYZ;XYZ',zeros(col-1)]; % Assemble linear system to be solved
     L = [L0;L1]; % Assemble RHSs
 end
 % ------ Solve for weights -----------------------------------------------
