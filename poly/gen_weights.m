@@ -19,9 +19,7 @@ coord    = [x,y,z];
 r_1d     = pdist(coord);
 r        = squareform(r_1d);
 % phi      = r.^m; % RBF matrix
-% dphidx   = m .* r(:,1) .^(m-2) .* (xd);
-% dphidy   = m .* r(:,1) .^(m-2) .* (yd);
-% dphidz   = m .* r(:,1) .^(m-2) .* (zd);
+% dphidr   = m .* r(:,1).^(m-2); % dphidr = dphidr / r to avoide divde 0;
 phi      = exp( - m^2 * r.^2 );
 dphidx   = -2 * m^2 .* phi(:,1) .* xd;
 dphidy   = -2 * m^2 .* phi(:,1) .* yd;
@@ -49,22 +47,11 @@ else % Create matrix with polynomial terms and matching constraints
         XYZ(:,ids+k+1:ide) = XYZ(:,idz1:idz2) .* Z(:,2);
     end
     
-    L1 = zeros(np,3); % Create matching RHSs
+    L1 = zeros(np,2); % Create matching RHSs
     if d >= 1
         L1(2,1) = 1;
         L1(3,2) = 1;
         L1(4,3) = 1;
-    end
-    if d >= 2
-        L1(5 ,1) = 2 * x(1);
-        L1(6 ,1) = y(1);
-        L1(6 ,2) = x(1);
-        L1(7 ,2) = 2 * y(1);
-        L1(8 ,1) = z(1);
-        L1(8 ,3) = x(1);
-        L1(9 ,2) = z(1);
-        L1(9 ,3) = y(1);
-        L1(10,3) = 2 * z(1);
     end
     A = [phi,XYZ;XYZ',zeros(np)]; % Assemble linear system to be solved
     L = [L0;L1]; % Assemble RHSs

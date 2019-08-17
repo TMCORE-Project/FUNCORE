@@ -1,10 +1,10 @@
 clc
 clear
 
-mesh_file = 'x1.2562.grid.nc';
+mesh_file = '../x1.2562.grid.nc';
 
 radius = 1;
-eps    = 50;
+eps    = 8;
 
 xCell = ncread(mesh_file,'xCell');
 yCell = ncread(mesh_file,'yCell');
@@ -25,9 +25,9 @@ lonlat(:,2) = latCell;
 r_1d   = pdist(coord);
 r      = squareform(r_1d);
 % phi    = (eps * r).^5;
-% dphidr = 5 * eps^5 * r.^4;
+% dphidr = 5 * eps^5 * r.^3; % dphidr = dphidr / r, to aviod divide 0
 phi    = exp( - eps^2 * r.^2 );
-dphidr = -2 * eps^2 * r .* phi;
+dphidr = -2 * eps^2 .* phi; % dphidr = dphidr / r, to aviod divide 0
 
 inv_phi = inv(phi);
 
@@ -35,10 +35,8 @@ drdlambda = zeros(nCell,nCell);
 drdtheta  = zeros(nCell,nCell);
 for i = 1:nCell
     for j = 1:nCell
-        if i~=j
-            drdlambda(i,j) = cos(latCell(j)) .* cos(latCell(i)) .* sin(lonCell(j) - lonCell(i)) / r(i,j);
-            drdtheta (i,j) = ( sin(latCell(j)) * cos(latCell(i)) * cos(lonCell(j)-lonCell(i)) - cos(latCell(j)) * sin(latCell(i)) ) / r(i,j);
-        end
+        drdlambda(i,j) = cos(latCell(j)) .* cos(latCell(i)) .* sin(lonCell(j) - lonCell(i)); % divide r is removed to avoid divide 0;
+        drdtheta (i,j) = ( sin(latCell(j)) * cos(latCell(i)) * cos(lonCell(j)-lonCell(i)) - cos(latCell(j)) * sin(latCell(i)) ); % divide r is removed to avoid divide 0;
     end
 end
 

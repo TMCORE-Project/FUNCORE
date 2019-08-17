@@ -16,8 +16,10 @@ parfor iCell = 1: mesh.nCells
     x   = mesh.xCell  (mesh.kdtree(iCell,:));
     y   = mesh.yCell  (mesh.kdtree(iCell,:));
     z   = mesh.zCell  (mesh.kdtree(iCell,:));
+    lon = mesh.lonCell(mesh.kdtree(iCell,:));
+    lat = mesh.latCell(mesh.kdtree(iCell,:));
     
-    w(iCell,:,:) = gen_weights(x,y,z,shape_coef,0);
+    w(iCell,:,:) = gen_weights(x,y,z,shape_coef);
 end
 
 dx = squeeze(w(:,:,1));

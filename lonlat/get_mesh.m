@@ -5,9 +5,9 @@ mesh.Omega = 7.292*10^-5;        %2.0 * pi / 86400.0;
 mesh.a     = 6371220.0;          %6371229.0
 mesh.g     = 9.80616;
 
-xCell   = ncread(mesh_file,'xCell');
-yCell   = ncread(mesh_file,'yCell');
-zCell   = ncread(mesh_file,'zCell');
+xCell   = ncread(mesh_file,'xCell') * mesh.a;
+yCell   = ncread(mesh_file,'yCell') * mesh.a;
+zCell   = ncread(mesh_file,'zCell') * mesh.a;
 
 lonCell = ncread(mesh_file,'lonCell');
 latCell = ncread(mesh_file,'latCell');

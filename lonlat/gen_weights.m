@@ -1,4 +1,4 @@
-function w = gen_weights (x,y,z,m,d)
+function w = gen_weights (x,y,z,lon,lat,radius,m,d)
 % Input parameters
 % x,y,z Column vectors with stencil node locations; approximation to
 % be accurate at x(1),y(1),z(1)
@@ -19,14 +19,14 @@ coord    = [x,y,z];
 r_1d     = pdist(coord);
 r        = squareform(r_1d);
 % phi      = r.^m; % RBF matrix
-% dphidx   = m .* r(:,1) .^(m-2) .* (xd);
-% dphidy   = m .* r(:,1) .^(m-2) .* (yd);
-% dphidz   = m .* r(:,1) .^(m-2) .* (zd);
+% dphidr   = m .* r(:,1).^(m-2); % dphidr = dphidr / r to avoide divde 0;
 phi      = exp( - m^2 * r.^2 );
-dphidx   = -2 * m^2 .* phi(:,1) .* xd;
-dphidy   = -2 * m^2 .* phi(:,1) .* yd;
-dphidz   = -2 * m^2 .* phi(:,1) .* zd;
-L0       = [dphidx,dphidy,dphidz]; % RHSs
+dphidr   = -2 * m^2 .* phi(:,1); % dphidr = dphidr / r, to aviod divide 0
+drdlon   = cos(lat) * cos(lat(1)) .* sin(lon-lon(1)); % divide r is removed to avoid divide 0
+drdlat   = ( sin(lat) * cos(lat(1)) .* cos(lon-lon(1)) - cos(lat) * sin(lat(1)) ); % divide r is removed to avoid divide 0
+dphidlon = dphidr .* drdlon;
+dphidlat = dphidr .* drdlat;
+L0       = [dphidlon,dphidlat]; % RHSs
 % ------ Polynomial part -------------------------------------------------
 if d == -1 % Special case; no polynomial terms,
     A = phi;
@@ -49,22 +49,21 @@ else % Create matrix with polynomial terms and matching constraints
         XYZ(:,ids+k+1:ide) = XYZ(:,idz1:idz2) .* Z(:,2);
     end
     
-    L1 = zeros(np,3); % Create matching RHSs
+    dxdlon = - radius * sin(lon(1)) * cos(lat(1));
+    dydlon = radius * cos(lon(1)) * cos(lat(1));
+    dzdlon = 0;
+    dxdlat = - radius * cos(lon(1)) * sin(lat(1));
+    dydlat = - radius * sin(lon(1)) * sin(lat(1));
+    dzdlat = radius * cos(lat(1));
+    
+    L1 = zeros(np,2); % Create matching RHSs
     if d >= 1
-        L1(2,1) = 1;
-        L1(3,2) = 1;
-        L1(4,3) = 1;
-    end
-    if d >= 2
-        L1(5 ,1) = 2 * x(1);
-        L1(6 ,1) = y(1);
-        L1(6 ,2) = x(1);
-        L1(7 ,2) = 2 * y(1);
-        L1(8 ,1) = z(1);
-        L1(8 ,3) = x(1);
-        L1(9 ,2) = z(1);
-        L1(9 ,3) = y(1);
-        L1(10,3) = 2 * z(1);
+        L1(2,1) = dxdlon;
+        L1(2,2) = dxdlat;
+        L1(3,1) = dydlon;
+        L1(3,2) = dydlat;
+        L1(4,1) = dzdlon;
+        L1(4,2) = dzdlat;
     end
     A = [phi,XYZ;XYZ',zeros(np)]; % Assemble linear system to be solved
     L = [L0;L1]; % Assemble RHSs

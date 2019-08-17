@@ -1,7 +1,7 @@
 clc
 clear
 
-mesh_file = 'x1.40962.grid.modified.nc';
+mesh_file = '../x1.40962.grid.modified.nc';
 % mesh_file = 'x1.655362.grid.nc';
 nSample    = 101; % Number of sample points
 
@@ -17,7 +17,7 @@ parfor iCell = 1: mesh.nCells
     y   = mesh.yCell  (mesh.kdtree(iCell,:));
     z   = mesh.zCell  (mesh.kdtree(iCell,:));
     
-    w(iCell,:,:) = gen_weights(x,y,z,shape_coef,0);
+    w(iCell,:,:) = gen_weights(x,y,z,shape_coef,-1);
 end
 
 dx = squeeze(w(:,:,1));
