@@ -2,8 +2,8 @@ clc
 clear
 
 % Choose mesh file
-mesh_file = 'x1.2562.grid.nc';
-% mesh_file = 'x1.40962.grid.nc';
+% mesh_file = 'x1.2562.grid.nc';
+mesh_file = 'x1.40962.grid.nc';
 % mesh_file = 'x1.163842.grid.nc';
 % mesh_file = 'x1.655362.grid.nc';
 
@@ -12,8 +12,8 @@ run_day          = 1;
 run_hour         = 0;
 run_minute       = 0;
 run_second       = 0;
-time_step        = 600;
-history_interval = 3600;
+time_step        = 100;
+history_interval = 100;
 temporal_scheme  = 'RK4';
 
 % Select case
@@ -25,6 +25,7 @@ viscosity_stencil = nSample;
 viscosity_order   = 4;
 viscosity_coef    = 1/6371229^40;
 shape_param       = 20;  % shape parameter for RBF
+poly_order        = 1;   % order of polynominal
 
 mesh = get_mesh(mesh_file,nSample);
 
@@ -37,7 +38,7 @@ parfor iCell = 1: mesh.nCells
     y   = mesh.yCell  (mesh.kdtree(iCell,:));
     z   = mesh.zCell  (mesh.kdtree(iCell,:));
     
-    w(iCell,:,:) = gen_weights(x,y,z,shape_param,0,base_opt);
+    w(iCell,:,:) = gen_weights(x,y,z,shape_param,poly_order,base_opt);
 end
 
 mesh.dx = squeeze(w(:,:,1));
