@@ -8,12 +8,13 @@ mesh_file = 'x1.2562.grid.nc';
 % mesh_file = 'x1.655362.grid.nc';
 
 % Define time(seconds)
-run_day         = 0;
-run_hour        = 1;
-run_minute      = 0;
-run_second      = 0;
-time_step       = 600;
-temporal_scheme = 'RK4';
+run_day          = 1;
+run_hour         = 0;
+run_minute       = 0;
+run_second       = 0;
+time_step        = 600;
+history_interval = 3600;
+temporal_scheme  = 'RK4';
 
 % Select case
 case_type       = 6;
@@ -56,18 +57,23 @@ for it = 1:run_step
     disp(['step ',num2str(it),'/',num2str(run_step)])
     [stat] = temporal_integration(stat,mesh,time_step,temporal_scheme);
     
-% plot initial field for check
-lon1d = -180:1:180;
-lat1d = -90:1:90;
-
-[lon2d,lat2d] = meshgrid(lon1d,lat1d);
-
-var      = stat.gh;
-var_plot = griddata(mesh.lonCell*mesh.r2d,mesh.latCell*mesh.r2d,var,lon2d,lat2d);
-
-pcolor(lon2d,lat2d,var_plot);
-shading interp
-colormap(jet)
-colorbar
-print(gcf,'-r300','-dpng',['rbf',num2str(it,'%05d'),'.png']);
+    integral_time = it*time_step;
+    
+    % Output
+    if rem(integral_time,history_interval)==0 && integral_time>=history_interval
+        % plot initial field for check
+        lon1d = -180:1:180;
+        lat1d = -90:1:90;
+        
+        [lon2d,lat2d] = meshgrid(lon1d,lat1d);
+        
+        var      = stat.gh;
+        var_plot = griddata(mesh.lonCell*mesh.r2d,mesh.latCell*mesh.r2d,var,lon2d,lat2d);
+        
+        pcolor(lon2d,lat2d,var_plot);
+        shading interp
+        colormap(jet)
+        colorbar
+        print(gcf,'-r300','-dpng',['rbf',num2str(it,'%05d'),'.png']);
+    end
 end
