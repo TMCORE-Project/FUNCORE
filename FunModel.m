@@ -9,9 +9,9 @@ mesh_file = 'x1.2562.grid.nc';
 
 % Define time(seconds)
 run_day         = 0;
-run_hour        = 0;
+run_hour        = 1;
 run_minute      = 0;
-run_second      = 600;
+run_second      = 0;
 time_step       = 600;
 temporal_scheme = 'RK4';
 
@@ -53,10 +53,9 @@ run_time = run_day*86400 + run_hour*3600 + run_minute*60 + run_second;
 run_step = run_time / time_step;
 
 for it = 1:run_step
-    disp(['step ',num2str(it)])
+    disp(['step ',num2str(it),'/',num2str(run_step)])
     [stat] = temporal_integration(stat,mesh,time_step,temporal_scheme);
-end
-
+    
 % plot initial field for check
 lon1d = -180:1:180;
 lat1d = -90:1:90;
@@ -70,3 +69,5 @@ pcolor(lon2d,lat2d,var_plot);
 shading interp
 colormap(jet)
 colorbar
+print(gcf,'-r300','-dpng',['rbf',num2str(it,'%05d'),'.png']);
+end

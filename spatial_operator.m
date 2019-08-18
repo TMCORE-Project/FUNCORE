@@ -15,7 +15,10 @@ a = mesh.a;
 
 % Compute the (projected) Cartesian derivatives applied to the velocity
 % and geopotential.
-parfor i = 1:4
+Tx = zeros(mesh.nCells,4);
+Ty = zeros(mesh.nCells,4);
+Tz = zeros(mesh.nCells,4);
+for i = 1:4
 Tx(:,i) = deriv(H(:,i),mesh.dx,mesh.kdtree,a);
 Ty(:,i) = deriv(H(:,i),mesh.dy,mesh.kdtree,a);
 Tz(:,i) = deriv(H(:,i),mesh.dz,mesh.kdtree,a);
@@ -43,7 +46,7 @@ td(:,4) = -( H(:,1).*(Tx(:,4) - mesh.dghs(:,1)) ...
            + (H(:,4)-mesh.ghs).*(Tx(:,1) + Ty(:,2) + Tz(:,3)));
 
 % Apply the hyper-viscosity, either once or twice.
-parfor i = 1:4
+for i = 1:4
     HH = H(:,i);
     td(:,i) = td(:,i) + sum(mesh.L .* HH(mesh.kdtree),2);
 end
