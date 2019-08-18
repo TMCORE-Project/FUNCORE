@@ -100,7 +100,7 @@ if bf_opt == 1
     
 elseif bf_opt == 2
     
-    f= exp(-(eps*r).^2);
+    f= exp(-(eps*r).^2) ./ r.^2;
     
 elseif bf_opt == 3
     

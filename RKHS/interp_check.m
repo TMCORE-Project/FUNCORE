@@ -4,10 +4,10 @@ clear
 interp_resolution = 0.1;
 
 %bf_opt --- base function option, 1 for r^eps, 2 for gaussian function exp(-(eps*r).^2)
-bf_opt = 3;
+bf_opt = 2;
 
 % power of distance weight
-eps = 20;
+eps = 1;
 
 % interp domain scheme, choose from : 'fr' = fixed radius ;  'ng' = neighbours
 r1 = 'fr';
