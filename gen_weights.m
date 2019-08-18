@@ -1,10 +1,10 @@
-function w = gen_weights (x,y,z,m,d)
+function w = gen_weights (x,y,z,m,d,base_opt)
 % Input parameters
 % x,y,z Column vectors with stencil node locations; approximation to
 % be accurate at x(1),y(1),z(1)
 % m Power of r in RBF fi(r) = r^m, with m odd, >= 3.
 % d Degree of supplementary polynomials (d = -1 no polynomials)
-%
+% base_opt, 1 for r^m base, 2 for Gaussian base
 % Output parameter
 % w Matrix with three columns, containing weights for d/dlon, d/dlat
 
@@ -18,15 +18,22 @@ n = length(xd);%x
 coord    = [x,y,z];
 r_1d     = pdist(coord);
 r        = squareform(r_1d);
-% phi      = r.^m; % RBF matrix
-% dphidx   = m .* r(:,1) .^(m-2) .* (xd);
-% dphidy   = m .* r(:,1) .^(m-2) .* (yd);
-% dphidz   = m .* r(:,1) .^(m-2) .* (zd);
-phi      = exp( - m^2 * r.^2 );
-dphidx   = -2 * m^2 .* phi(:,1) .* xd;
-dphidy   = -2 * m^2 .* phi(:,1) .* yd;
-dphidz   = -2 * m^2 .* phi(:,1) .* zd;
+
+% Choose base function
+if base_opt == 1
+    phi      = r.^m; % RBF matrix
+    dphidx   = -m .* r(:,1) .^(m-2) .* (xd);
+    dphidy   = -m .* r(:,1) .^(m-2) .* (yd);
+    dphidz   = -m .* r(:,1) .^(m-2) .* (zd);
+elseif base_opt == 2
+    phi      = exp( - m^2 * r.^2 );
+    dphidx   = 2 * m^2 .* phi(:,1) .* xd;
+    dphidy   = 2 * m^2 .* phi(:,1) .* yd;
+    dphidz   = 2 * m^2 .* phi(:,1) .* zd;
+end
+
 L0       = [dphidx,dphidy,dphidz]; % RHSs
+
 % ------ Polynomial part -------------------------------------------------
 if d == -1 % Special case; no polynomial terms,
     A = phi;
@@ -69,6 +76,7 @@ else % Create matrix with polynomial terms and matching constraints
     A = [phi,XYZ;XYZ',zeros(np)]; % Assemble linear system to be solved
     L = [L0;L1]; % Assemble RHSs
 end
+
 % ------ Solve for weights -----------------------------------------------
 W = A\L;
 w = W(1:n,:); % Extract the RBF-FD weights

@@ -1,9 +1,11 @@
 function mesh = get_mesh(mesh_file,nSamples)
 
 % Define Constants
-mesh.Omega = 7.292*10^-5;        %2.0 * pi / 86400.0; 
+mesh.omega = 7.292*10^-5;        %2.0 * pi / 86400.0; 
 mesh.a     = 6371220.0;          %6371229.0
 mesh.g     = 9.80616;
+mesh.d2r   = pi/180;
+mesh.r2d   = 180/pi;
 
 xCell   = ncread(mesh_file,'xCell');
 yCell   = ncread(mesh_file,'yCell');
@@ -21,8 +23,11 @@ mesh.lonCell = lonCell;
 mesh.latCell = latCell;
 mesh.nCells  = nCells;
 
+mesh.sinlon  = sin(mesh.lonCell);
+mesh.coslon  = cos(mesh.lonCell);
 mesh.sinlat  = sin(mesh.latCell);
-mesh.f       = 2 * mesh.Omega * mesh.sinlat;
+mesh.coslat  = cos(mesh.latCell);
+mesh.f       = 2 * mesh.omega * mesh.sinlat;
 
 mesh.coord   = [xCell,yCell,zCell];
 
@@ -38,3 +43,26 @@ for iCell = 1:nCells
 end
 
 mesh.distance = distance;
+
+mesh.weights = repmat(mesh.nCells/(4*pi),[1 mesh.nCells]); % Extract the quadrature weights.
+
+% Variables for projecting an arbitrary Cartesian vector onto the surface
+% of the sphere.
+x2 = xCell.^2; xy = xCell.*yCell;
+y2 = yCell.^2; xz = xCell.*zCell;
+z2 = zCell.^2; yz = yCell.*zCell;
+
+mesh.p_u = [1-x2  -xy   -xz];
+mesh.p_v = [-xy  1-y2   -yz];
+mesh.p_w = [-xz   -yz  1-z2];
+
+% vectors for translating the field in Cartesian coordinates to a field
+% in spherical coordinates.
+mesh.c2s_u = [-sin(lonCell) -sin(latCell).*cos(lonCell)];
+mesh.c2s_v = [cos(lonCell) -sin(latCell).*sin(lonCell)];
+mesh.c2s_w = [zeros(size(lonCell)) cos(latCell)];
+
+% Transformation for converting the latitudinal velocity to cartesian velocity.
+mesh.s2c_u = [-sin(lonCell), cos(lonCell), zeros(size(lonCell))];
+% Transformation for converting the logitudinal velocity to cartesian velocity.
+mesh.s2c_v = [-cos(lonCell).*sin(latCell), -sin(lonCell).*sin(latCell), cos(latCell)];

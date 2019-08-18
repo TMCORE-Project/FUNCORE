@@ -1,0 +1,42 @@
+clc
+clear
+
+% Choose mesh file
+mesh_file = 'x1.2562.grid.nc';
+% mesh_file = 'x1.40962.grid.nc';
+% mesh_file = 'x1.163842.grid.nc';
+% mesh_file = 'x1.655362.grid.nc';
+
+nSample    = 36; % Number of sample points
+base_opt   = 2; % 1 for r^m base, 2 for Gaussian base
+case_type  = 6;
+
+mesh = get_mesh(mesh_file,nSample);
+
+shape_coef = 20;
+
+w = zeros(mesh.nCells,nSample,3);
+parfor iCell = 1: mesh.nCells
+    disp(['Calculate weights for cell # ',num2str(iCell)])
+    
+    x   = mesh.xCell  (mesh.kdtree(iCell,:));
+    y   = mesh.yCell  (mesh.kdtree(iCell,:));
+    z   = mesh.zCell  (mesh.kdtree(iCell,:));
+    
+    w(iCell,:,:) = gen_weights(x,y,z,shape_coef,0,base_opt);
+end
+
+dx = squeeze(w(:,:,1));
+dy = squeeze(w(:,:,2));
+dz = squeeze(w(:,:,3));
+
+[stat,mesh] = test_case(mesh,case_type);
+
+lon1d = 0:1:360;
+lat1d = -90:1:90;
+
+[lon2d,lat2d] = meshgrid(lon1d,lat1d);
+
+var_plot = griddata(lon2d,lat2d,lonCell*r2d,latCell*r2d);
+
+pcolor();
