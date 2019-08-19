@@ -1,9 +1,9 @@
 clc
 clear
 
-mesh_file = 'x1.40962.grid.modified.nc';
+mesh_file = '../x1.2562.grid.nc';
 % mesh_file = 'x1.655362.grid.nc';
-nSample    = 101; % Number of sample points
+nSample    = 300; % Number of sample points
 
 mesh = get_mesh(mesh_file,nSample);
 

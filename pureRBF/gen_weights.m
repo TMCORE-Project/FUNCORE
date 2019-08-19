@@ -19,9 +19,9 @@ r      = squareform(r_1d);
 
 phi    = exp( - eps^2 * r.^2 );
 
-dphidx = -2 * eps^2 .* phi(:,1) .* xd;
-dphidy = -2 * eps^2 .* phi(:,1) .* yd;
-dphidz = -2 * eps^2 .* phi(:,1) .* zd;
+dphidx = -eps^2 .* phi(:,1) .* xd;
+dphidy = -eps^2 .* phi(:,1) .* yd;
+dphidz = -eps^2 .* phi(:,1) .* zd;
 
 L      = [dphidx,dphidy,dphidz]; % RHSs
 

@@ -2,8 +2,8 @@ clc
 clear
 
 % Choose mesh file
-% mesh_file = 'x1.2562.grid.nc';
-mesh_file = 'x1.40962.grid.nc';
+mesh_file = 'x1.2562.grid.nc';
+% mesh_file = 'x1.40962.grid.nc';
 % mesh_file = 'x1.163842.grid.nc';
 % mesh_file = 'x1.655362.grid.nc';
 
@@ -12,14 +12,14 @@ run_day          = 1;
 run_hour         = 0;
 run_minute       = 0;
 run_second       = 0;
-time_step        = 100;
-history_interval = 100;
+time_step        = 600;
+history_interval = 600;
 temporal_scheme  = 'RK4';
 
 % Select case
 case_type       = 6;
 
-nSample           = 36; % Number of sample points
+nSample           = 31; % Number of sample points
 base_opt          = 2; % 1 for r^m base, 2 for Gaussian base
 viscosity_stencil = nSample;
 viscosity_order   = 4;

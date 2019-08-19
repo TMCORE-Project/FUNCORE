@@ -27,9 +27,9 @@ if base_opt == 1
     dphidz   = -m .* r(:,1) .^(m-2) .* (zd);
 elseif base_opt == 2
     phi      = exp( - m^2 * r.^2 );
-    dphidx   = 2 * m^2 .* phi(:,1) .* xd;
-    dphidy   = 2 * m^2 .* phi(:,1) .* yd;
-    dphidz   = 2 * m^2 .* phi(:,1) .* zd;
+    dphidx   = -m^2 .* phi(:,1) .* xd;
+    dphidy   = -m^2 .* phi(:,1) .* yd;
+    dphidz   = -m^2 .* phi(:,1) .* zd;
 end
 
 L0       = [dphidx,dphidy,dphidz]; % RHSs

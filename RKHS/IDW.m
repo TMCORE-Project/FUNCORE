@@ -36,20 +36,20 @@ vs=reshape(vc,[],1);
 
 % rbf
 rbf_base = @(eps_rbf,r) exp(-(eps_rbf.*r).^2);
-eps_rbf  = 0.5;
+eps_rbf  = 1;
 r_1d     = pdist([xs,ys]);
 r        = squareform(r_1d);
 phi      = rbf_base(eps_rbf,r);
 c        = phi \ vs;
 
-vs_ext            = vs;
-vs_ext(end+1)     = 0;
-phi_ext           = phi;
-phi_ext(end+1,:)  = 1;
-phi_ext(:,end+1)  = 1;
-phi_ext(end,end)  = 0;
-c_ext             = phi_ext \ vs_ext;
-c                 = c_ext(1:end-1);
+% vs_ext            = vs;
+% vs_ext(end+1)     = 0;
+% phi_ext           = phi;
+% phi_ext(end+1,:)  = 1;
+% phi_ext(:,end+1)  = 1;
+% phi_ext(end,end)  = 0;
+% c_ext             = phi_ext \ vs_ext;
+% c                 = c_ext(1:end-1);
 
 % rbf_val = rbf(xs, ys, vs, x, y, 'gaussian',0,-4);
 

@@ -1,7 +1,7 @@
 clc
 clear
 
-interp_resolution = 0.05;
+interp_resolution = 0.1;
 
 %bf_opt --- base function option, 1 for r^eps, 2 for gaussian function exp(-(eps*r).^2)
 bf_opt = 4;
