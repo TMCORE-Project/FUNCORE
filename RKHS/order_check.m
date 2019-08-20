@@ -1,9 +1,9 @@
 clc
 clear
 
-eps       = 1;
-base_type = 1;
-poly_deg  = 7;
+eps       = 5;
+base_type = 2;
+poly_deg  = 2;
 
 res(1) = 0.25;
 res(2) = 0.5;
@@ -45,9 +45,9 @@ for ires = 1:size(res,2)
     
     xd              = dist;
     xd(end/2+1:end) = -xd(end/2+1:end);
-    xd              = bsxfun(@circshift,xd,0:size(xd,1)-1);
+    xd              = bsxfun(@circshift,xd,0:size(xd,1)-1)';
     
-    B0 = rbf_base_deriv(xd,eps,xd);
+    B0 = rbf_base_deriv(dist2d,eps,xd);
     
     % Add polynominal
     if poly_deg ~= -1
@@ -59,26 +59,26 @@ for ires = 1:size(res,2)
         
         A = [A0,poly;poly',zeros(poly_deg+1)];
         
-        Lp = zeros(np,poly_deg+1);
+        Lp = zeros(poly_deg+1,np);
         if(poly_deg>=1)
-            Lp(:,2) = 1;
+            Lp(2,:) = 1;
         end
         if(poly_deg>=2)
             for ip = 3:poly_deg
-                Lp(:,ip) = ip*lon.^(ip-1);
+                Lp(ip,:) = ip*lon.^(ip-1);
             end
         end
         
-        B = [B0 Lp];
+        B = [B0;Lp];
     else
         A = A0;
         B = B0;
     end
     
-    Dp = B/A;
-    D  = Dp(:,1:np);
+    Dp = A\B;
+    D  = Dp(1:np,:);
     
-    df = D*f0;
+    df = D'*f0;
     
     L1(ires) = sum(abs(df-df0)) / sum(abs(df));
     L2(ires) = sqrt( sum((df-df0).^2)./sum(df0.^2) );

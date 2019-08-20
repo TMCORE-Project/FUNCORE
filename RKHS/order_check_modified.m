@@ -1,9 +1,9 @@
 clc
 clear
 
-eps       = 2;
-base_type = 1;
-poly_deg  = 1;
+eps       = 4;
+base_type = 2;
+poly_deg  = 8;
 
 res(1) = 0.25;
 res(2) = 0.5;
@@ -59,25 +59,32 @@ for ires = 1:size(res,2)
         
         A = [A0,poly;poly',zeros(poly_deg+1)];
         
-        Lp = zeros(poly_deg+1,np);
+        Lp = zeros(np,poly_deg+1);
         if(poly_deg>=1)
-            Lp(2,:) = 1;
+            Lp(:,2) = 1;
+        end
+        if(poly_deg>=2)
+            for ip = 3:poly_deg
+                Lp(:,ip) = ip*lon.^(ip-1);
+            end
         end
         
-        B = [B0;Lp];
+        B = [B0 Lp];
     else
-        A  = A0;
+        A = A0;
         B = B0;
     end
     
-    Dp = A\B;
-    D  = Dp(1:np,:);
+    Dp = B/A;
+    D  = Dp(:,1:np);
     
     df = D*f0;
     
+    L1(ires) = sum(abs(df-df0)) / sum(abs(df));
     L2(ires) = sqrt( sum((df-df0).^2)./sum(df0.^2) );
     
     if ires >= 2
-        order(ires-1) = log(L2(ires)/L2(ires-1))/log(res(ires)/res(ires-1));
+        order_L1(ires-1) = log(L1(ires)/L1(ires-1))/log(res(ires)/res(ires-1));
+        order_L2(ires-1) = log(L2(ires)/L2(ires-1))/log(res(ires)/res(ires-1));
     end
 end

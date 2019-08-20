@@ -20,7 +20,7 @@ temporal_scheme  = 'RK4';
 case_type       = 6;
 
 nSample           = 300; % Number of sample points
-base_opt          = 1; % 1 for r^m base, 2 for Gaussian base
+base_opt          = 2; % 1 for r^m base, 2 for Gaussian base
 viscosity_stencil = nSample;
 viscosity_order   = 4;
 viscosity_coef    = 1/6371229^40;
