@@ -22,7 +22,7 @@ temporal_scheme  = 'RK4';
 % Select case
 case_type         = 6;
 
-nSample           = 51; % Number of sample points
+nSample           = 31; % Number of sample points
 base_opt          = 2; % 1 for r^m base, 2 for Gaussian base
 viscosity_stencil = nSample;
 viscosity_order   = 4;
@@ -63,8 +63,6 @@ mesh.dz = squeeze(dz(:,:));
 run_time = run_day*86400 + run_hour*3600 + run_minute*60 + run_second;
 run_step = run_time / time_step;
 
-output_idx = 0;
-
 for it = 1:run_step
     disp(['step ',num2str(it),'/',num2str(run_step)])
     [stat] = temporal_integration(stat,mesh,time_step,temporal_scheme);
@@ -73,8 +71,6 @@ for it = 1:run_step
     
     % Output
     if rem(integral_time,history_interval)==0 && integral_time>=history_interval
-        output_idx = output_idx + 1;
-        
         % plot initial field for check
         lon1d = -180:1:180;
         lat1d = -90:1:90;
@@ -88,7 +84,7 @@ for it = 1:run_step
         shading interp
         colormap(jet)
         colorbar
-        title(['RBF model at hour',num2str(output_idx)])
-        print(gcf,'-r300','-dpng',[output_path,'\','rbf',num2str(output_idx,'%05d'),'.png']);
+        title(['RBF model at hour',])
+        print(gcf,'-r300','-dpng',[output_path,'\','rbf',num2str(it,'%05d'),'.png']);
     end
 end
