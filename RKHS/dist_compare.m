@@ -39,15 +39,15 @@ hold on
 plot(dist3,abs(beta3(1,:)))
 hold on
 
-eps = 1;
+eps = 2;
 
-rbf_base = @(r,eps) exp(-(eps.*r).^2);
+% rbf_base = @(r,eps) exp(-(eps.*r).^2);
 % rbf_base = @(r,eps) r.^eps;
-% rbf_base = @(r,eps) sqrt(1+(eps.*r).^2);
+rbf_base = @(r,eps) sqrt(1+(eps.*r).^2);
 
-rbf_base_deriv = @(r,eps,xd) -2*eps^2.*exp(-(eps.*r).^2).*xd;
+% rbf_base_deriv = @(r,eps,xd) -2*eps^2.*exp(-(eps.*r).^2).*xd;
 % rbf_base_deriv = @(r,eps,xd) eps * r.^(eps-2).*xd;
-% rbf_base_deriv = @(r,eps,xd) eps.^2 ./ sqrt(1+(eps*r).^2).*xd;
+rbf_base_deriv = @(r,eps,xd) eps.^2 ./ sqrt(1+(eps*r).^2).*xd;
 
 new_dist1 = bsxfun(@circshift,dist1,0:size(dist1,1)-1);
 new_dist2 = bsxfun(@circshift,dist2,0:size(dist2,1)-1);
@@ -108,3 +108,11 @@ figure
 plot(dspline1-cos(lon1))
 figure
 plot(fd1-cos(lon1))
+
+L2_rbf_1 = sqrt( sum((fd1-cos(lon1)).^2)./sum(cos(lon1).^2) );
+L2_rbf_2 = sqrt( sum((fd2-cos(lon2)).^2)./sum(cos(lon2).^2) );
+L2_spline_1 = sqrt( sum((dspline1-cos(lon1)).^2)./sum(cos(lon1).^2) );
+L2_spline_2 = sqrt( sum((dspline2-cos(lon2)).^2)./sum(cos(lon2).^2) );
+
+order_spline = log(L2_spline_2/L2_spline_1)/log(2);
+order_rbf    = log(L2_rbf_2   /L2_rbf_1   )/log(2);

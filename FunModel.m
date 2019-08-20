@@ -19,13 +19,13 @@ temporal_scheme  = 'RK4';
 % Select case
 case_type       = 6;
 
-nSample           = 31; % Number of sample points
-base_opt          = 2; % 1 for r^m base, 2 for Gaussian base
+nSample           = 300; % Number of sample points
+base_opt          = 1; % 1 for r^m base, 2 for Gaussian base
 viscosity_stencil = nSample;
 viscosity_order   = 4;
 viscosity_coef    = 1/6371229^40;
-shape_param       = 20;  % shape parameter for RBF
-poly_order        = 1;   % order of polynominal
+shape_param       = 7;  % shape parameter for RBF
+poly_order        = 0;   % order of polynominal
 
 mesh = get_mesh(mesh_file,nSample);
 

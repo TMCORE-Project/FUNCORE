@@ -22,9 +22,9 @@ r        = squareform(r_1d);
 % Choose base function
 if base_opt == 1
     phi      = r.^m; % RBF matrix
-    dphidx   = m .* r(:,1) .^(m-2) .* xd;
-    dphidy   = m .* r(:,1) .^(m-2) .* yd;
-    dphidz   = m .* r(:,1) .^(m-2) .* zd;
+    dphidx   = m .* r(:,1).^(m-2) .* xd;
+    dphidy   = m .* r(:,1).^(m-2) .* yd;
+    dphidz   = m .* r(:,1).^(m-2) .* zd;
 elseif base_opt == 2
     phi      = exp(-(m.*r).^2);
     dphidx   = -2 * m^2.*exp(-(m.*r(:,1)).^2) .* xd;
