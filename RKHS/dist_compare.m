@@ -39,15 +39,15 @@ hold on
 plot(dist3,abs(beta3(1,:)))
 hold on
 
-eps = 0.8;
+eps = 1;
 
 rbf_base = @(r,eps) exp(-(eps.*r).^2);
 % rbf_base = @(r,eps) r.^eps;
 % rbf_base = @(r,eps) sqrt(1+(eps.*r).^2);
 
-rbf_base_deriv = @(r,eps,xd) eps^2.*exp(-(eps.*r).^2).*xd;
-% rbf_base_deriv = @(r,eps) 2*eps*r.^(2*eps-1);
-% rbf_base_deriv = @(r,eps) eps^2*r ./ sqrt(1+(eps*r).^2);
+rbf_base_deriv = @(r,eps,xd) -2*eps^2.*exp(-(eps.*r).^2).*xd;
+% rbf_base_deriv = @(r,eps,xd) eps * r.^(eps-2).*xd;
+% rbf_base_deriv = @(r,eps,xd) eps.^2 ./ sqrt(1+(eps*r).^2).*xd;
 
 new_dist1 = bsxfun(@circshift,dist1,0:size(dist1,1)-1);
 new_dist2 = bsxfun(@circshift,dist2,0:size(dist2,1)-1);
@@ -65,25 +65,46 @@ xd1(end/2+1:end) = -xd1(end/2+1:end);
 xd2(end/2+1:end) = -xd2(end/2+1:end);
 xd3(end/2+1:end) = -xd3(end/2+1:end);
 
-B1 = rbf_base_deriv(dist1,eps,xd1);
-B2 = rbf_base_deriv(dist2,eps,xd2);
-B3 = rbf_base_deriv(dist3,eps,xd3);
+xd1 = bsxfun(@circshift,xd1,0:size(xd1,1)-1);
+xd2 = bsxfun(@circshift,xd2,0:size(xd2,1)-1);
+xd3 = bsxfun(@circshift,xd3,0:size(xd3,1)-1);
+
+B1 = rbf_base_deriv(xd1,eps,xd1);
+B2 = rbf_base_deriv(xd2,eps,xd2);
+B3 = rbf_base_deriv(xd3,eps,xd3);
 
 D1 = A1\B1;
 D2 = A2\B2;
 D3 = A3\B3;
 
-plot(dist1,abs(D1),'LineWidth',3)
+plot(dist1,abs(D1(1,:)),'LineWidth',3)
 hold on
-plot(dist2,abs(D2),'LineWidth',3)
+plot(dist2,abs(D2(1,:)),'LineWidth',3)
 hold on
-plot(dist3,abs(D3),'LineWidth',3)
+plot(dist3,abs(D3(1,:)),'LineWidth',3)
 hold on
 
 f1 = sin(lon1);
 f2 = sin(lon2);
 f3 = sin(lon3);
 
-fd1=D1.*f1;
-fd2=D2.*f2;
-fd3=D3.*f3;
+fd1=D1*f1;
+fd2=D2*f2;
+fd3=D3*f3;
+
+% figure
+% plot(lon1,fd1)
+% hold on
+% plot(lon2,fd2)
+% hold on
+% plot(lon3,fd3)
+% hold on
+
+dspline1 = beta1*f1;
+dspline2 = beta2*f2;
+dspline3 = beta3*f3;
+
+figure
+plot(dspline1-cos(lon1))
+figure
+plot(fd1-cos(lon1))

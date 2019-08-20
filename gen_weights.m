@@ -22,17 +22,17 @@ r        = squareform(r_1d);
 % Choose base function
 if base_opt == 1
     phi      = r.^m; % RBF matrix
-    dphidx   = -m .* r(:,1) .^(m-2) .* (xd);
-    dphidy   = -m .* r(:,1) .^(m-2) .* (yd);
-    dphidz   = -m .* r(:,1) .^(m-2) .* (zd);
+    dphidx   = m .* r(:,1) .^(m-2) .* xd;
+    dphidy   = m .* r(:,1) .^(m-2) .* yd;
+    dphidz   = m .* r(:,1) .^(m-2) .* zd;
 elseif base_opt == 2
-    phi      = exp( - m^2 * r.^2 );
-    dphidx   = -m^2 .* phi(:,1) .* xd;
-    dphidy   = -m^2 .* phi(:,1) .* yd;
-    dphidz   = -m^2 .* phi(:,1) .* zd;
+    phi      = exp(-(m.*r).^2);
+    dphidx   = -2 * m^2.*exp(-(m.*r(:,1)).^2) .* xd;
+    dphidy   = -2 * m^2.*exp(-(m.*r(:,1)).^2) .* yd;
+    dphidz   = -2 * m^2.*exp(-(m.*r(:,1)).^2) .* zd;
 end
 
-L0       = [dphidx,dphidy,dphidz]; % RHSs
+L0 = [dphidx,dphidy,dphidz]; % RHSs
 
 % ------ Polynomial part -------------------------------------------------
 if d == -1 % Special case; no polynomial terms,
