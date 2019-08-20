@@ -1,9 +1,9 @@
 clc
 clear
 
-eps       = 0.5;
+eps       = 2;
 base_type = 1;
-poly_deg  = 2;
+poly_deg  = 1;
 
 res(1) = 0.25;
 res(2) = 0.5;
@@ -41,13 +41,13 @@ for ires = 1:size(res,2)
     dist   = distance(0.,0.,lat,lon,'radians');
     dist2d = bsxfun(@circshift,dist,0:size(dist,1)-1);
     
-    A  = rbf_base(dist2d,eps);
+    A0  = rbf_base(dist2d,eps);
     
     xd              = dist;
     xd(end/2+1:end) = -xd(end/2+1:end);
     xd              = bsxfun(@circshift,xd,0:size(xd,1)-1);
     
-    B = rbf_base_deriv(xd,eps,xd);
+    B0 = rbf_base_deriv(xd,eps,xd);
     
     % Add polynominal
     if poly_deg ~= -1
@@ -57,18 +57,21 @@ for ires = 1:size(res,2)
             poly(:,ipoly) = dist.^(ipoly-1);
         end
         
-        L = [A,poly;poly',zeros(poly_deg+1)];
+        A = [A0,poly;poly',zeros(poly_deg+1)];
         
         Lp = zeros(poly_deg+1,np);
-        if(poly_deg>1)
+        if(poly_deg>=1)
             Lp(2,:) = 1;
         end
         
+        B = [B0;Lp];
     else
-        L = A;
+        A  = A0;
+        B = B0;
     end
     
-    D = L\B;
+    Dp = A\B;
+    D  = Dp(1:np,:);
     
     df = D*f0;
     
