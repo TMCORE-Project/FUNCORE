@@ -1,9 +1,9 @@
 clc
 clear
 
-eps       = 5;
-base_type = 2;
-poly_deg  = 2;
+eps       = 0.6;
+base_type = 1;
+poly_deg  = 4;
 
 res(1) = 0.25;
 res(2) = 0.5;
@@ -80,6 +80,8 @@ for ires = 1:size(res,2)
     
     df = D'*f0;
     
+    dd(ires) = df(end/2+1);
+    
     L1(ires) = sum(abs(df-df0)) / sum(abs(df));
     L2(ires) = sqrt( sum((df-df0).^2)./sum(df0.^2) );
     
@@ -88,3 +90,5 @@ for ires = 1:size(res,2)
         order_L2(ires-1) = log(L2(ires)/L2(ires-1))/log(res(ires)/res(ires-1));
     end
 end
+
+order = log(abs(dd(2)+1)/abs(dd(1)+1))/log(2)

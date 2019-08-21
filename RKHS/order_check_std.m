@@ -2,7 +2,7 @@ clc
 clear
 
 eps       = 1;
-nSamples  = 7;
+nSamples  = 11;
 
 res(1) = 0.25;
 res(2) = 0.5;
