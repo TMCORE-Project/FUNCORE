@@ -1,12 +1,12 @@
-% clc
-% clear
+clc
+clear
 
 eps       = 5;
-base_type = 2;
-poly_deg  = -1;
-nSamples  = 501;
+base_type = 1;
+poly_deg  = 1;
+nSamples  = 20;
 
-minRes    = 0.05;
+minRes    = 0.1;
 nRes      = 5;
 
 res(1) = minRes;
@@ -49,9 +49,9 @@ for ires = 1:nRes
         xc    = x(i);
         yc    = y(i);
         
-        dist     = sqrt((x-xc).^2 + (y-yc).^2);
+        dist      = sqrt((x-xc).^2 + (y-yc).^2);
 
-        [w,idx]  = gen_weights_2d (pts_i,pts_c,eps,poly_deg,nSamples,base_type);
+        [w,idx]   = gen_weights_2d (pts_i,pts_c,eps,poly_deg,nSamples,base_type);
         
         dfdx_n(i) = sum(w(:,1).*f(idx));
         dfdy_n(i) = sum(w(:,2).*f(idx));
