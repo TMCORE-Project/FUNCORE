@@ -51,6 +51,8 @@ dKdlon = rbf_dlon(K,eps,mesh.lonCell(I),mesh.latCell(I),mesh.lonCell(iCell),mesh
 dKdlat = rbf_dlat(K,eps,mesh.lonCell(I),mesh.latCell(I),mesh.lonCell(iCell),mesh.latCell(iCell));
 [dpsidlon,dpsidlat] = Lpsi(beta,dKdlon,dKdlat);
 
+aaa = eps * K.^(eps-2).*cos(mesh.latCell(iCell)).*cos(mesh.latCell(I)).*sin(mesh.lonCell(iCell)-mesh.lonCell(I));
+
 Llon = dpsidlon*beta;
 Llat = dpsidlat*beta;
 
