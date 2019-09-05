@@ -42,20 +42,18 @@ elseif base_type == 3
 end
 
 r = rbf_base(dist,eps);
-K = r;
-K = bsxfun(@circshift,K,0:size(K,1)-1); % extent K to a 2d matrix
+K1d = r;
+K2d = bsxfun(@circshift,K1d,0:size(K1d,1)-1); % extent K to a 2d matrix
 
-[psi,beta] = orthogonalization(K);
+[psi,beta] = orthogonalization(K2d);
 
-dKdlon = rbf_dlon(K,eps,mesh.lonCell(I),mesh.latCell(I),mesh.lonCell(iCell),mesh.latCell(iCell));
-dKdlat = rbf_dlat(K,eps,mesh.lonCell(I),mesh.latCell(I),mesh.lonCell(iCell),mesh.latCell(iCell));
+dKdlon = rbf_dlon(K1d,eps,mesh.lonCell(I),mesh.latCell(I),mesh.lonCell(iCell),mesh.latCell(iCell));
+dKdlat = rbf_dlat(K1d,eps,mesh.lonCell(I),mesh.latCell(I),mesh.lonCell(iCell),mesh.latCell(iCell));
 [dpsidlon,dpsidlat] = Lpsi(beta,dKdlon,dKdlat);
 
-aaa = eps * K.^(eps-2).*cos(mesh.latCell(iCell)).*cos(mesh.latCell(I)).*sin(mesh.lonCell(iCell)-mesh.lonCell(I));
+Llon = dpsidlon.*beta;
+Llat = dpsidlat.*beta;
 
-Llon = dpsidlon*beta;
-Llat = dpsidlat*beta;
-
-% p = pcolor(flipud(psi));
-% set(p,'edgecolor','none')
-% colormap(jet)
+p = pcolor(flipud(psi));
+set(p,'edgecolor','none')
+colormap(jet)

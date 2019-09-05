@@ -4,20 +4,26 @@ clear
 % Set parameters
 eps          = 5;
 rbf_base_opt = 'PHS'; % Choose from PHS, GA
-res          = pi/40;
-res_plot     = pi/100;
+res          = 1/25;
+res_plot     = 1/400;
+x_start      = -1;
+x_end        = 1;
+y_start      = -1;
+y_end        = 1;
 
 % Calculate grids
-x1d          = -pi:res:pi;
-y1d          = -pi:res:pi;
+x1d          = x_start:res:x_end;
+y1d          = y_start:res:y_end;
 
 nx = size(x1d,2);
 ny = size(y1d,2);
+n  = nx*ny;
 
 [x2d,y2d] = meshgrid(x1d,y1d);
 
-x = reshape(x2d,[],1);
-y = reshape(y2d,[],1);
+x     = reshape(x2d,[],1);
+y     = reshape(y2d,[],1);
+coord = [x,y];
 
 center_point = find(x==0&y==0);
 
@@ -25,14 +31,14 @@ f               = zeros(size(x));
 f(center_point) = 1;
 
 % Calculate weights matrix
-r = distance(0,0,x,y,'radians');
+r = pdist(coord);
 K = rbf_base(r,eps,rbf_base_opt); % Calculate kernal function
-A = bsxfun(@circshift,K,0:size(K,1)-1); % extent K to a 2d matrix
+A = squareform(K);
 w = A \ f;
 
 % Interpolate
-x1d_plot = -pi:res_plot:pi;
-y1d_plot = -pi:res_plot:pi;
+x1d_plot = x_start:res_plot:x_end;
+y1d_plot = y_start:res_plot:y_end;
 
 [x2d_plot,y2d_plot] = meshgrid(x1d_plot,y1d_plot);
 
@@ -44,16 +50,16 @@ ny_plot = size(y1d_plot,2);
 n_plot  = nx_plot*ny_plot;
 
 f_plot_1d = zeros(n_plot,1);
-for i = 1:n_plot
-    r_plot       = distance(x_plot(i),y_plot(i),x,y,'radians');
+parfor i = 1:n_plot
+    r_plot       = sqrt( (x_plot(i) - x).^2 + (y_plot(i) - y).^2 );
     phi_plot     = rbf_base(r_plot,eps,rbf_base_opt);
     f_plot_1d(i) = sum(w .* phi_plot);
 end
 
 f_plot = reshape(f_plot_1d,nx_plot,ny_plot);
 
-pic = surf(f_plot);
-set(pic,'edgecolor','none')
+pic = surf(x2d_plot,y2d_plot,f_plot);
+% set(pic,'edgecolor','none')
 colormap(jet)
 
 
