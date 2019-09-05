@@ -4,12 +4,14 @@ clear
 % Set parameters
 eps          = 5;
 rbf_base_opt = 'PHS'; % Choose from PHS, GA
-res          = 1/50;
-res_plot     = 1/100;
-x_start      = -0.5;
-x_end        = 0.5;
-y_start      = -0.5;
-y_end        = 0.5;
+d2r          = pi/180;
+r2d          = 180/pi;
+res          = 5*d2r;
+res_plot     = 1*d2r;
+x_start      = -pi;
+x_end        = pi-res;
+y_start      = -pi/2+res;
+y_end        = pi/2-res;
 
 % Calculate grids
 x1d          = x_start:res:x_end;
@@ -23,7 +25,6 @@ n  = nx*ny;
 
 x     = reshape(x2d,[],1);
 y     = reshape(y2d,[],1);
-coord = [x,y];
 
 center_point = find(x==0&y==0);
 
@@ -31,9 +32,12 @@ f               = zeros(size(x));
 f(center_point) = 1;
 
 % Calculate weights matrix
-r = pdist(coord);
+r = zeros(n,n);
+for i = 1:n
+    r(i,:) = distance(y(i),x(i),y,x,'radians')';
+end
 K = rbf_base(r,eps,rbf_base_opt); % Calculate kernal function
-A = squareform(K);
+A = K;
 w = A \ f;
 
 % Interpolate
@@ -51,14 +55,14 @@ n_plot  = nx_plot*ny_plot;
 
 f_plot_1d = zeros(n_plot,1);
 parfor i = 1:n_plot
-    r_plot       = sqrt( (x_plot(i) - x).^2 + (y_plot(i) - y).^2 );
+    r_plot       = distance(y_plot(i),x_plot(i),y,x,'radians');
     phi_plot     = rbf_base(r_plot,eps,rbf_base_opt);
     f_plot_1d(i) = sum(w .* phi_plot);
 end
 
-f_plot = reshape(f_plot_1d,nx_plot,ny_plot);
+f_plot = reshape(f_plot_1d,ny_plot,nx_plot);
 
-pic = surf(x2d_plot,y2d_plot,f_plot);
+pic = surf(x2d_plot*r2d,y2d_plot*r2d,f_plot);
 % set(pic,'edgecolor','none')
 colormap(jet)
 
