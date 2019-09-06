@@ -1,20 +1,20 @@
 clc
 clear
 
-eps       = 1;
+eps       = 41;
 
 % Select base function
-base_type = 1;
+base_type = 2;
 
 root_path = 'E:\Study\Models\FUNCORE';
 
 % Choose mesh file
-% mesh_file = 'x1.2562.grid.nc';
-mesh_file = 'x1.40962.grid.nc';
+mesh_file = 'x1.2562.grid.nc';
+% mesh_file = 'x1.40962.grid.nc';
 % mesh_file = 'x1.163842.grid.nc';
 % mesh_file = 'x1.655362.grid.nc';
 
-nSamples = 1600; % Number of sample points
+nSamples = 2562; % Number of sample points
 
 d2r = pi/180;
 r2d = 180/pi;
@@ -41,6 +41,7 @@ K = rbf_base(r,eps,base_type);
 [psi,beta] = orthogonalization(K);
 beta       = beta';
 orth_check = psi*psi';
+orth_check(orth_check>0.99) = 0;
 
 % for i = 1:nSamples
 %     dKdlon(i,:) = rbf_dlon(r(i,:),eps,lonCell',latCell',lonCell(i),latCell(i),base_type);
@@ -55,6 +56,14 @@ Llat = dKdlat*beta'*beta;
 
 Llon = Llon';
 Llat = Llat';
+
+dfdlon = cos(lonCell(1)) - sin(lonCell(1));
+dfdlat = cos(latCell(1));
+
+fI = 1 + sin(lonCell) + cos(lonCell) + sin(latCell);
+
+Llonf = sum(fI.*Llon);
+Llatf = sum(fI.*Llat);
 
 % p = pcolor(flipud(psi));
 % set(p,'edgecolor','none')
