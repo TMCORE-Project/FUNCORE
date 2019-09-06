@@ -1,14 +1,14 @@
 clc
 clear
 
-eps       = 5;
+eps       = 9;
 base_type = 2;
 
 root_path = 'E:\Study\Models\FUNCORE';
 
 % Choose mesh file
-mesh_file = 'x1.2562.grid.nc';
-% mesh_file = 'x1.40962.grid.nc';
+% mesh_file = 'x1.2562.grid.nc';
+mesh_file = 'x1.40962.grid.nc';
 % mesh_file = 'x1.163842.grid.nc';
 % mesh_file = 'x1.655362.grid.nc';
 
@@ -20,7 +20,7 @@ r2d = 180/pi;
 mesh_file = [root_path,'\',mesh_file];
 mesh      = get_mesh(mesh_file,nSamples);
 
-iCell    = 100;
+iCell    = 1;
 dist     = distance(mesh.latCell(iCell),mesh.lonCell(iCell),mesh.latCell,mesh.lonCell,'radians');
 [dist,I] = sort(dist,'ascend');
 dist     = dist(1:nSamples);
@@ -58,11 +58,8 @@ orth_check = psi*psi';
 dKdlon = rbf_dlon(r,eps,mesh.lonCell(I),mesh.latCell(I),mesh.lonCell(iCell),mesh.latCell(iCell));
 dKdlat = rbf_dlat(r,eps,mesh.lonCell(I),mesh.latCell(I),mesh.lonCell(iCell),mesh.latCell(iCell));
 
-dpsidlon = dKdlon*beta';
-dpsidlat = dKdlat*beta';
-
-Llon = dpsidlon*beta;
-Llat = dpsidlat*beta;
+Llon = dKdlon*beta'*beta;
+Llat = dKdlat*beta'*beta;
 
 p = pcolor(flipud(psi));
 set(p,'edgecolor','none')
