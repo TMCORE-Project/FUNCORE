@@ -1,7 +1,7 @@
 clc
 clear
 
-eps       = 15;
+eps       = 10;
 
 % Select base function
 base_type = 1;
@@ -23,7 +23,7 @@ r2d = 180/pi;
 mesh_file = [root_path,'\',mesh_file];
 mesh      = get_mesh(mesh_file,nSamples);
 
-iCell    = 1000;
+iCell    = 1;
 dist     = distance(mesh.latCell(iCell),mesh.lonCell(iCell),mesh.latCell,mesh.lonCell,'radians');
 [dist,I] = sort(dist,'ascend');
 dist     = dist(1:nSamples);
@@ -40,7 +40,7 @@ K = rbf_base(r,eps,base_type);
 
 dKdlon = zeros(nSamples,nSamples);
 dKdlat = zeros(nSamples,nSamples);
-parfor i = 1:nSamples
+for i = 1:nSamples
     dKdlon(i,:) = rbf_dlon(r(i,:),eps,lonCell',latCell',lonCell(i),latCell(i),base_type);
     dKdlat(i,:) = rbf_dlat(r(i,:),eps,lonCell',latCell',lonCell(i),latCell(i),base_type);
 end
@@ -59,10 +59,14 @@ plot(DfDlon_a,'b')
 hold on
 plot(DfDlon_n,'r')
 
-% figure
-% plot(DfDlat_a,'b')
-% hold on
-% plot(DfDlat_n,'r')
+figure
+plot(DfDlat_a,'b')
+hold on
+plot(DfDlat_n,'r')
+
+figure
+lambda=eig(Dlon);
+plot(real(lambda),imag(lambda),'.')
 
 function rbf = rbf_base(r,eps,base_type)
 if base_type == 1
@@ -89,7 +93,7 @@ end
 
 function dlat = rbf_dlat(r,eps,lon,lat,lon_c,lat_c,base_type)
 
-drdlat = sin(lat_c).*cos(lat).*cos(lon_c-lon) - cos(lat_c).*cos(lat);
+drdlat = sin(lat_c).*cos(lat).*cos(lon_c-lon) - cos(lat_c).*sin(lat);
 
 if base_type == 1
     dlat = -2*eps^2.*exp(-(eps.*r).^2).*drdlat;
