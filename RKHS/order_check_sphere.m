@@ -1,10 +1,10 @@
 clc
 clear
 
-eps       = 5;
+eps       = 15;
 
 % Select base function
-base_type = 2;
+base_type = 1;
 
 root_path = 'E:\Study\Models\FUNCORE';
 
@@ -23,7 +23,7 @@ r2d = 180/pi;
 mesh_file = [root_path,'\',mesh_file];
 mesh      = get_mesh(mesh_file,nSamples);
 
-iCell    = 1;
+iCell    = 1000;
 dist     = distance(mesh.latCell(iCell),mesh.lonCell(iCell),mesh.latCell,mesh.lonCell,'radians');
 [dist,I] = sort(dist,'ascend');
 dist     = dist(1:nSamples);
@@ -54,9 +54,15 @@ DfDlat_a = cos(latCell);
 DfDlon_n = Dlon * f;
 DfDlat_n = Dlat * f;
 
+figure
 plot(DfDlon_a,'b')
 hold on
 plot(DfDlon_n,'r')
+
+% figure
+% plot(DfDlat_a,'b')
+% hold on
+% plot(DfDlat_n,'r')
 
 function rbf = rbf_base(r,eps,base_type)
 if base_type == 1
