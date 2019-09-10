@@ -18,25 +18,23 @@ mesh_file = 'x1.2562.grid.nc';
 % mesh_file = 'x1.163842.grid.nc';
 % mesh_file = 'x1.655362.grid.nc';
 
-nSamples = 2562; % Number of sample points
-
 d2r = pi/180;
 r2d = 180/pi;
 
 mesh_file = [root_path,'\',mesh_file];
-mesh      = get_mesh(mesh_file,nSamples);
 
-iCell    = 1;
-dist     = distance(mesh.latCell(iCell),mesh.lonCell(iCell),mesh.latCell,mesh.lonCell,'radians');
-[dist,I] = sort(dist,'ascend');
-dist     = dist(1:nSamples);
-I        = I   (1:nSamples);
-lonCell  = mesh.lonCell(I);
-latCell  = mesh.latCell(I);
+xCell   = ncread(mesh_file,'xCell');
+yCell   = ncread(mesh_file,'yCell');
+zCell   = ncread(mesh_file,'zCell');
+
+lonCell = ncread(mesh_file,'lonCell');
+latCell = ncread(mesh_file,'latCell');
+
+nSamples = size(xCell,1); % Number of sample points
 
 r = zeros(nSamples,nSamples);
-for i = 1:nSamples
-    r(i,:) = distance(latCell(i),lonCell(i),latCell,lonCell,'radians');
+for iCell = 1:nSamples
+    r(iCell,:) = distance(latCell(iCell),lonCell(iCell),latCell,lonCell,'radians');
 end
 
 K = rbf_base(r,eps,base_type);
@@ -60,10 +58,7 @@ dfdlat_n = Dlat * f;
 % Plot eigenvalue of differential operator
 figure
 lambda=eig(Dlon);
-lambda_r = real(lambda);
-lambda_i = imag(lambda);
 plot(real(lambda),imag(lambda),'.')
-spectrum_radius = max(sqrt(lambda_r.^2 + lambda_i.^2));
 
 % Plot f
 x = -pi:plot_res*d2r:pi;
