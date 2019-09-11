@@ -14,14 +14,17 @@ zCell   = ncread(mesh_file,'zCell');
 lonCell = ncread(mesh_file,'lonCell');
 latCell = ncread(mesh_file,'latCell');
 
+areaCell = ncread(mesh_file,'areaCell');
+
 nCells  = size(xCell,1);
 
-mesh.xCell   = xCell;
-mesh.yCell   = yCell;
-mesh.zCell   = zCell;
-mesh.lonCell = lonCell;
-mesh.latCell = latCell;
-mesh.nCells  = nCells;
+mesh.xCell    = xCell;
+mesh.yCell    = yCell;
+mesh.zCell    = zCell;
+mesh.lonCell  = lonCell;
+mesh.latCell  = latCell;
+mesh.areaCell = areaCell;
+mesh.nCells   = nCells;
 
 mesh.sinlon  = sin(mesh.lonCell);
 mesh.coslon  = cos(mesh.lonCell);

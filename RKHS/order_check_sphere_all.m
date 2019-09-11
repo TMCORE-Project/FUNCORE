@@ -23,14 +23,10 @@ r2d = 180/pi;
 
 mesh_file = [root_path,'\',mesh_file];
 
-xCell   = ncread(mesh_file,'xCell');
-yCell   = ncread(mesh_file,'yCell');
-zCell   = ncread(mesh_file,'zCell');
+lonCell = ncread(mesh_file,'lonVertex');
+latCell = ncread(mesh_file,'latVertex');
 
-lonCell = ncread(mesh_file,'lonCell');
-latCell = ncread(mesh_file,'latCell');
-
-nSamples = size(xCell,1); % Number of sample points
+nSamples = size(lonCell,1); % Number of sample points
 
 r = zeros(nSamples,nSamples);
 for iCell = 1:nSamples
@@ -46,8 +42,8 @@ for i = 1:nSamples
     dKdlat(i,:) = rbf_dlat(r(i,:),eps,lonCell',latCell',lonCell(i),latCell(i),base_type);
 end
 
-Dlon = K \ dKdlon;
-Dlat = K \ dKdlat;
+Dlon = dKdlon / K;
+Dlat = dKdlat / K;
 
 f        = sin(lonCell) + cos(lonCell) + sin(latCell) + cos(latCell);
 dfdlon_a = cos(lonCell) - sin(lonCell);

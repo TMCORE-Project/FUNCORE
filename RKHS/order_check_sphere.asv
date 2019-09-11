@@ -1,24 +1,24 @@
 clc
 clear
 
-eps       = 6;
+eps       = 20;
 
 % Select base function
-base_type = 3;
+base_type = 1;
 
 plot_res  = 0.5;
 
 root_path = 'E:\Study\Models\FUNCORE';
 
 % Choose mesh file
-mesh_file = 'x1.2562.grid.nc';
+% mesh_file = 'x1.2562.grid.nc';
 % mesh_file = 'x1.2562.grid.modified.nc';
-% mesh_file = 'x1.10242.grid.nc';
+mesh_file = 'x1.10242.grid.nc';
 % mesh_file = 'x1.40962.grid.nc';
 % mesh_file = 'x1.163842.grid.nc';
 % mesh_file = 'x1.655362.grid.nc';
 
-nSamples = 2562; % Number of sample points
+nSamples = 10242; % Number of sample points
 
 d2r = pi/180;
 r2d = 180/pi;
@@ -33,7 +33,6 @@ dist     = dist(1:nSamples);
 I        = I   (1:nSamples);
 lonCell  = mesh.lonCell(I);
 latCell  = mesh.latCell(I);
-areaCell = mesh.areaCell;
 
 r = zeros(nSamples,nSamples);
 for i = 1:nSamples
@@ -58,8 +57,7 @@ dfdlat_a = cos(latCell) - sin(latCell);
 dfdlon_n = Dlon * f;
 dfdlat_n = Dlat * f;
 
-L2lon = sqrt(sum((dfdlon_n-dfdlon_a).^2.*areaCell) / sum(areaCell)) ...
-      / sqrt(sum(dfdlon_a.^2.*areaCell) / sum(areaCell));
+L2lon = sqrt(sum(df));
 
 % Plot eigenvalue of differential operator
 figure
@@ -70,7 +68,7 @@ plot(real(lambda),imag(lambda),'.')
 spectrum_radius = max(sqrt(lambda_r.^2 + lambda_i.^2));
 
 % Plot f
-x = -pi:plot_res*d2r:pi;
+x = 0:plot_res*d2r:2*pi;
 y = -pi/2:plot_res*d2r:pi/2;
 
 [x2d,y2d] = meshgrid(x,y);
