@@ -1,10 +1,10 @@
 clc
 clear
 
-eps       = 6;
+eps       = 20;
 
 % Select base function
-base_type = 3;
+base_type = 1;
 
 plot_res  = 0.5;
 
@@ -39,6 +39,8 @@ r = zeros(nSamples,nSamples);
 for i = 1:nSamples
     r(i,:) = distance(latCell(i),lonCell(i),latCell,lonCell,'radians');
 end
+
+% r = 2 * tan(r/2);
 
 K = rbf_base(r,eps,base_type);
 
