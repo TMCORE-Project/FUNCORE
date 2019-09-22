@@ -1,10 +1,12 @@
 clc
 clear
 
-eps       = 20;
+eps       = 5;
+
+wave_number = 3;
 
 % Select base function
-base_type = 1;
+base_type = 2;
 
 plot_res  = 0.5;
 
@@ -27,7 +29,7 @@ mesh_file = [root_path,'\',mesh_file];
 mesh      = get_mesh(mesh_file,nSamples);
 
 iCell    = 1;
-dist     = distance(mesh.latCell(iCell),mesh.lonCell(iCell),mesh.latCell,mesh.lonCell,'radians');
+dist     = pdist(mesh.latCell(iCell),mesh.lonCell(iCell),mesh.latCell,mesh.lonCell,'radians');
 [dist,I] = sort(dist,'ascend');
 dist     = dist(1:nSamples);
 I        = I   (1:nSamples);
@@ -37,7 +39,7 @@ areaCell = mesh.areaCell;
 
 r = zeros(nSamples,nSamples);
 for i = 1:nSamples
-    r(i,:) = distance(latCell(i),lonCell(i),latCell,lonCell,'radians');
+    r(i,:) = pdist(latCell(i),lonCell(i),latCell,lonCell,'radians');
 end
 
 % r = 2 * tan(r/2);
@@ -54,9 +56,9 @@ end
 Dlon = dKdlon / K;
 Dlat = dKdlat / K;
 
-f        = sin(lonCell) + cos(lonCell) + sin(latCell) + cos(latCell);
-dfdlon_a = cos(lonCell) - sin(lonCell);
-dfdlat_a = cos(latCell) - sin(latCell);
+f        = sin(wave_number*lonCell) + cos(wave_number*lonCell) + sin(wave_number*latCell) + cos(wave_number*latCell);
+dfdlon_a = wave_number*cos(wave_number*lonCell) - wave_number*sin(wave_number*lonCell);
+dfdlat_a = wave_number*cos(wave_number*latCell) - wave_number*sin(wave_number*latCell);
 dfdlon_n = Dlon * f;
 dfdlat_n = Dlat * f;
 
