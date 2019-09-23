@@ -1,7 +1,7 @@
 clc
 clear
 
-eps       = 7;
+eps       = 25;
 
 % Select base function
 base_type = 2;
@@ -137,8 +137,8 @@ function dlon = rbf_dlon(r,eps,lon,lat,lon_c,lat_c,base_type)
 
 x      = cos(lon_c-lon).*cos(lat_c).*cos(lat)+sin(lat_c).*sin(lat);
 xinv   = 1-x.^2;
-xinv(abs(xinv)<10^-15)=0;
-drdlon = sin(lon_c-lon).*cos(lat_c).*cos(lat)./xinv;
+xinv(xinv<0)=0;
+drdlon = sin(lon_c-lon).*cos(lat_c).*cos(lat)./sqrt(xinv);
 
 if base_type == 1
     dlon = -2*eps^2.*exp(-(eps.*r).^2).*r.*drdlon;
@@ -153,10 +153,10 @@ end
 
 function dlat = rbf_dlat(r,eps,lon,lat,lon_c,lat_c,base_type)
 
-x      = cos(lon_c-lon).*cos(lat_c).*cos(lat)+sin(lat_c).*sin(lat);
+x      = cos(lon_c-lon).*sin(lat_c).*cos(lat)+sin(lat_c).*sin(lat);
 xinv   = 1-x.^2;
-xinv(abs(xinv)<10^-15)=0;
-drdlat = -(-cos(lon_c-lon).*sin(lat_c).*sin(lat)+cos(lat_c).*sin(lat))./xinv;
+xinv(xinv<0)=0;
+drdlat = -(-cos(lon_c-lon).*sin(lat_c).*cos(lat)+cos(lat_c).*sin(lat))./sqrt(xinv);
 
 if base_type == 1
     dlat = -2*eps^2.*exp(-(eps.*r).^2).*r.*drdlat;
