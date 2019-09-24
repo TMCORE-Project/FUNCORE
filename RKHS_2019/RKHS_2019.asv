@@ -1,21 +1,15 @@
 clc
 clear
 
-eps       = 3;
+eps       = 41;
 
 % Select base function
 base_type = 2;
-
-plot_res  = 0.5;
-
-wave_number = 1;
 
 root_path = 'E:\Study\Models\FUNCORE';
 
 % Choose mesh file
 mesh_file = 'x1.2562.grid.nc';
-% mesh_file = 'x1.2562.grid.modified.nc';
-% mesh_file = 'x1.10242.grid.nc';
 % mesh_file = 'x1.40962.grid.nc';
 % mesh_file = 'x1.163842.grid.nc';
 % mesh_file = 'x1.655362.grid.nc';
@@ -35,43 +29,43 @@ z        = mesh.zCell;
 coord    = [x,y,z];
 dist     = pdist(coord);
 dist     = squareform(dist);
-lonCell  = mesh.lonCell;
-latCell  = mesh.latCell;
+lonCell  = mesh.lonCell(I);
+latCell  = mesh.latCell(I);
 
-r = dist;
+r = zeros(nSamples,nSamples);
+for i = 1:nSamples
+    r(i,:) = distance(latCell(i),lonCell(i),latCell,lonCell,'radians');
+end
 
 K = rbf_base(r,eps,base_type);
 % K = bsxfun(@circshift,K1d,0:size(K1d,1)-1); % extent K to a 2d matrix
 
-[psi,beta] = qr(K);
-% [psi,beta] = orthogonalization(K);
+[psi,beta] = orthogonalization(K);
 beta       = beta';
 orth_check = psi*psi';
 orth_check(orth_check>0.99) = 0;
 
-dKdlon = zeros(nSamples,nSamples);
-dKdlat = zeros(nSamples,nSamples);
-for i = 1:nSamples
-    dKdlon(i,:) = rbf_dlon(r(i,:),eps,lonCell',latCell',lonCell(i),latCell(i),base_type);
-    dKdlat(i,:) = rbf_dlat(r(i,:),eps,lonCell',latCell',lonCell(i),latCell(i),base_type);
-end
+% for i = 1:nSamples
+%     dKdlon(i,:) = rbf_dlon(r(i,:),eps,lonCell',latCell',lonCell(i),latCell(i),base_type);
+%     dKdlat(i,:) = rbf_dlat(r(i,:),eps,lonCell',latCell',lonCell(i),latCell(i),base_type);
+% end
 
-Dlon = (beta'*beta*dKdlon)';
-Dlat = (beta'*beta*dKdlat)';
+dKdlon = rbf_dlon(dist',eps,lonCell',latCell',lonCell(1),latCell(1),base_type);
+dKdlat = rbf_dlat(dist',eps,lonCell',latCell',lonCell(1),latCell(1),base_type);
 
-f        = sin(wave_number*lonCell) + cos(wave_number*lonCell) + sin(wave_number*latCell) + cos(wave_number*latCell);
-dfdlon_a = wave_number*cos(wave_number*lonCell) - wave_number*sin(wave_number*lonCell);
-dfdlat_a = wave_number*cos(wave_number*latCell) - wave_number*sin(wave_number*latCell);
-dfdlon_n = Dlon * f;
-dfdlat_n = Dlat * f;
+Llon = dKdlon*beta'*beta;
+Llat = dKdlat*beta'*beta;
 
-% Plot eigenvalue of differential operator
-figure
-lambda=eig(Dlon);
-lambda_r = real(lambda);
-lambda_i = imag(lambda);
-plot(real(lambda),imag(lambda),'.')
-spectrum_radius = max(sqrt(lambda_r.^2 + lambda_i.^2));
+Llon = Llon';
+Llat = Llat';
+
+dfdlon = cos(lonCell(1)) - sin(lonCell(1));
+dfdlat = cos(latCell(1));
+
+fI = 1 + sin(lonCell) + cos(lonCell) + sin(latCell);
+
+Llonf = sum(fI.*Llon);
+Llatf = sum(fI.*Llat);
 
 % p = pcolor(flipud(psi));
 % set(p,'edgecolor','none')
