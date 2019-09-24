@@ -43,9 +43,10 @@ r = dist;
 K = rbf_base(r,eps,base_type);
 % K = bsxfun(@circshift,K1d,0:size(K1d,1)-1); % extent K to a 2d matrix
 
-[psi,beta] = qr(K);
+[psi,R]    = qr(K);
+beta       = K/R/K;
 % [psi,beta] = orthogonalization(K);
-beta       = beta';
+% beta       = beta';
 orth_check = psi*psi';
 orth_check(orth_check>0.99) = 0;
 
