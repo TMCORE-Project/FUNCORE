@@ -22,14 +22,14 @@ r        = squareform(r_1d);
 % Choose base function
 if base_opt == 1
     phi      = r.^m; % RBF matrix
-    dphidx   = m .* r(:,1).^(m-2) .* xd;
-    dphidy   = m .* r(:,1).^(m-2) .* yd;
-    dphidz   = m .* r(:,1).^(m-2) .* zd;
+    dphidx   = -m .* r(:,1).^(m-2) .* xd;
+    dphidy   = -m .* r(:,1).^(m-2) .* yd;
+    dphidz   = -m .* r(:,1).^(m-2) .* zd;
 elseif base_opt == 2
     phi      = exp(-(m.*r).^2);
-    dphidx   = -2 * m^2.*exp(-(m.*r(:,1)).^2) .* xd;
-    dphidy   = -2 * m^2.*exp(-(m.*r(:,1)).^2) .* yd;
-    dphidz   = -2 * m^2.*exp(-(m.*r(:,1)).^2) .* zd;
+    dphidx   = 2 * m^2.*exp(-(m.*r(:,1)).^2) .* xd;
+    dphidy   = 2 * m^2.*exp(-(m.*r(:,1)).^2) .* yd;
+    dphidz   = 2 * m^2.*exp(-(m.*r(:,1)).^2) .* zd;
 end
 
 L0 = [dphidx,dphidy,dphidz]; % RHSs
@@ -62,21 +62,21 @@ else % Create matrix with polynomial terms and matching constraints
         L1(3,2) = 1;
         L1(4,3) = 1;
     end
-    if d >= 2
-        L1(5 ,1) = 2 * x(1);
-        L1(6 ,1) = y(1);
-        L1(6 ,2) = x(1);
-        L1(7 ,2) = 2 * y(1);
-        L1(8 ,1) = z(1);
-        L1(8 ,3) = x(1);
-        L1(9 ,2) = z(1);
-        L1(9 ,3) = y(1);
-        L1(10,3) = 2 * z(1);
-    end
+%     if d >= 2
+%         L1(5 ,1) = 2 * x(1);
+%         L1(6 ,1) = y(1);
+%         L1(6 ,2) = x(1);
+%         L1(7 ,2) = 2 * y(1);
+%         L1(8 ,1) = z(1);
+%         L1(8 ,3) = x(1);
+%         L1(9 ,2) = z(1);
+%         L1(9 ,3) = y(1);
+%         L1(10,3) = 2 * z(1);
+%     end
     A = [phi,XYZ;XYZ',zeros(np)]; % Assemble linear system to be solved
     L = [L0;L1]; % Assemble RHSs
 end
 
 % ------ Solve for weights -----------------------------------------------
-W = A\L;
+W = (L'/A)';
 w = W(1:n,:); % Extract the RBF-FD weights

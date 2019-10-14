@@ -27,14 +27,15 @@ base_opt          = 2; % 1 for r^m base, 2 for Gaussian base
 viscosity_stencil = nSample;
 viscosity_order   = 4;
 viscosity_coef    = 1/6371229^40;
-eps               = 3;  % shape parameter for RBF
-poly_order        = 0;   % order of polynominal
+eps               = 7;  % shape parameter for RBF
+poly_order        = 1;   % order of polynominal
 
 mesh = get_mesh(mesh_file,nSample);
 
 % Calculate weight matrix
 w = zeros(mesh.nCells,nSample,3);
 parfor iCell = 1: mesh.nCells
+% for iCell = 1: mesh.nCells
     disp(['Calculate weights for cell # ',num2str(iCell)])
     
     x   = mesh.xCell  (mesh.kdtree(iCell,:));
@@ -44,7 +45,7 @@ parfor iCell = 1: mesh.nCells
     xi = [x,y,z];
     xc = mesh.coord(iCell,:);
     
-%     w(iCell,:,:) = gen_weights(x,y,z,eps,poly_order,base_opt);
+    w(iCell,:,:) = gen_weights(x,y,z,eps,poly_order,base_opt);
     dx(iCell,:) = rbfga_weights('x',eps,xi,xc);
     dy(iCell,:) = rbfga_weights('y',eps,xi,xc);
     dz(iCell,:) = rbfga_weights('z',eps,xi,xc);
